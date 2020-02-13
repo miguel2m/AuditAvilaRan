@@ -5,17 +5,22 @@
  */
 package model;
 
+import org.apache.commons.math3.ml.clustering.Clusterable;
+
+
+
 /**
  *
  * @author P05144
  */
-public class Audit {
+public class Audit implements Clusterable{
     private String fileName;
     private String column;
-
+    private double[] points;
     public Audit(String fileName, String column) {
         this.fileName = fileName;
         this.column = column;
+        this.points = new double[] { Double.parseDouble(column),0 };
     }
     
     public String getFileName() {
@@ -36,7 +41,12 @@ public class Audit {
 
     @Override
     public String toString() {
-        return "Audit{" + "fileName=" + fileName + ", column=" + column + '}';
+        return "Audit{" + "fileName=" + fileName + ", column=" + column + '}'+"\n";
+    }
+
+    @Override
+    public double[] getPoint() {
+      return points;
     }
 
     

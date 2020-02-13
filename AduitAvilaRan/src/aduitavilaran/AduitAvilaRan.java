@@ -10,8 +10,8 @@ import controller.ExecutionTime;
 import controller.Validator;
 import controller.readcsv.ReadCustomCsv;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import model.Audit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -19,6 +19,10 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+
+import org.apache.commons.math3.stat.Frequency;
 
 /**
  *
@@ -160,14 +164,25 @@ public class AduitAvilaRan {
         System.out.println(" "+_input+ " "+_audit+ " "+_output);
         
         try {
-            ReadCustomCsv.getDataAudit(_input, _audit).forEach((t) -> {
-                System.out.println(" "+t.toString());
+            Frequency frequency = new Frequency();
+            List<Audit> _listAudi = ReadCustomCsv.getDataAudit(_input, _audit);
+            _listAudi.forEach((t) -> {
+                frequency.addValue(Double.parseDouble(t.getColumn()));
+                //System.out.println(" "+t.toString());    
+            });
+            
+            //System.out.println(" "+frequency.toString());
+            KMeansPlusPlusClusterer<Audit> clusterer = new KMeansPlusPlusClusterer<Audit>(frequency.getUniqueCount(), 10000);
+            List<CentroidCluster<Audit>> clusterResults = clusterer.cluster(_listAudi);
+            clusterResults.forEach((t) -> {
+                System.out.println("Cluster " + t.getPoints().toString()+" "+t.getPoints().size());  
             });
         } catch (IOException ex) {
             System.out.println(""+ex.getMessage());
         } catch (CsvException ex) {
              System.out.println(""+ex.getMessage());
         }
+        
         System.out.println(executionTime.getExecutionTime());
     }
 
