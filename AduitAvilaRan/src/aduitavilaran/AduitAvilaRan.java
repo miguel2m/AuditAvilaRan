@@ -8,8 +8,10 @@ package aduitavilaran;
 import com.opencsv.exceptions.CsvException;
 import controller.ExecutionTime;
 import controller.Validator;
+import controller.kmeansCluster.KmeansCluster;
 import controller.readcsv.ReadCustomCsv;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import model.Audit;
 import org.apache.commons.cli.CommandLine;
@@ -19,10 +21,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 
 import org.apache.commons.math3.stat.Frequency;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 /**
  *
@@ -42,7 +46,7 @@ public class AduitAvilaRan {
         String _input = null; //TABLA A AUDITAR
         String _audit = null; //COLUMMNA A AUDITAR
         String _output = null; //SALIDA
-        double _baseline = 0; //BASELINE
+        double _baseline = -9; //BASELINE
         boolean _columns =false;
         ExecutionTime executionTime = new ExecutionTime(); //Execution Time
         try {
@@ -122,12 +126,24 @@ public class AduitAvilaRan {
             //System.out.println("Copyright (c)"+executionTime.getDate()+" Telefonica VENEZUELA");
             System.exit(0);
         }
+        if (_input != null &&_columns == true) {
+            try {
+                ReadCustomCsv.getColumnsCSV(_input).forEach(System.out::println);
+            } catch (IOException ex) {
+                System.out.println("" + ex.getMessage());
+            } catch (CsvException ex) {
+                System.out.println("" + ex.getMessage());
+            } finally {
+                System.exit(0);
+            }
 
+        }
         //show help
         if (showHelpMessage == true
                 || _input == null
                 || _audit == null
-                || _output == null) {
+                || _output == null
+                || _baseline == -1) {
             HelpFormatter formatter = new HelpFormatter();
             String header = "AVILA RAN AUDIT\n\n";
             String footer = "\n";
@@ -148,35 +164,40 @@ public class AduitAvilaRan {
             System.exit(1);
         }
         
-        if (_columns == true) {
-            try {
-                ReadCustomCsv.getColumnsCSV(_input).forEach(System.out::println);
-            } catch (IOException ex) {
-                System.out.println("" + ex.getMessage());
-            } catch (CsvException ex) {
-                System.out.println("" + ex.getMessage());
-            } finally {
-                System.exit(0);
-            }
-
-        }
         
-        System.out.println(" "+_input+ " "+_audit+ " "+_output);
+        
+        System.out.println(" INPUT "+_input+ " AUDIT "+_audit+" BASELINE "+_baseline+" OUTPUT "+_output);
         
         try {
             Frequency frequency = new Frequency();
+            // Get a DescriptiveStatistics instance
+            DescriptiveStatistics stats = new DescriptiveStatistics();
             List<Audit> _listAudi = ReadCustomCsv.getDataAudit(_input, _audit);
-            _listAudi.forEach((t) -> {
-                frequency.addValue(Double.parseDouble(t.getColumn()));
-                //System.out.println(" "+t.toString());    
-            });
-            
-            //System.out.println(" "+frequency.toString());
-            KMeansPlusPlusClusterer<Audit> clusterer = new KMeansPlusPlusClusterer<Audit>(frequency.getUniqueCount(), 10000);
-            List<CentroidCluster<Audit>> clusterResults = clusterer.cluster(_listAudi);
-            clusterResults.forEach((t) -> {
-                System.out.println("Cluster " + t.getPoints().toString()+" "+t.getPoints().size());  
-            });
+            if (!CollectionUtils.isEmpty(_listAudi)) {
+                _listAudi.forEach((t) -> {
+                    frequency.addValue(t.getColumn());  
+                });
+                if (_baseline != -9){
+                    stats.addValue(_baseline);
+                }
+                List<CentroidCluster<Audit>> clusterAudit = KmeansCluster.getCluster(frequency.getUniqueCount(),_listAudi);
+                
+                Iterator<CentroidCluster<Audit>> it = clusterAudit.iterator();
+                while(it.hasNext()){
+                    CentroidCluster<Audit> t = it.next();
+                    
+                    stats.addValue(t.getPoints().get(0).getColumn()); 
+                    if (Math.round(stats.getStandardDeviation()) <= 3){ //DESVIACION ESTANDAR RESPECTO AL BASELINE
+                        System.out.println("DESVIACION "+Math.round(stats.getStandardDeviation()) );
+                        Audit tempBaseline = new Audit("BASELINE", _baseline);
+                        t.getPoints().add(tempBaseline);
+                    }
+                    stats.removeMostRecentValue();
+                    System.out.println("CLUSTER "+t.getPoints().toString());
+                }
+                
+                
+            }
         } catch (IOException ex) {
             System.out.println(""+ex.getMessage());
         } catch (CsvException ex) {

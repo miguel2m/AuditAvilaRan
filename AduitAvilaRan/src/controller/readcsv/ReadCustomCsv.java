@@ -47,7 +47,7 @@ public class ReadCustomCsv {
             rows.forEach((t) -> {
                 if (rows.get(0) != t) {
                     for (int i = 0; i < t.length; i++) {
-                        if (rows.get(0)[i].equals(_audit)) {
+                        if (rows.get(0)[i].equals(_audit)) { // VALIDA SI LA COLUMNA CORRESPONDE A LA CLUMNA A AUDITAR
                             String fileName;
                             String[] tempSplit = t[0].split("_");
                             if (tempSplit[1].equals("L")
@@ -76,8 +76,10 @@ public class ReadCustomCsv {
                             } else {
                                 fileName = tempSplit[1];
                             }
-                            Audit _auditTemp = new Audit(fileName, t[i]);
-                            audit.add(_auditTemp);
+                            if (t[i].matches("[+-]?([0-9]*[.])?[0-9]+")) { //VALIDA SI EL NUMERO ES DOUBLE
+                                Audit _auditTemp = new Audit(fileName,Double.parseDouble(t[i]) );
+                                audit.add(_auditTemp);
+                            }
                         }
                     }
                 }

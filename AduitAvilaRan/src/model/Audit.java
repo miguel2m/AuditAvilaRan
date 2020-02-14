@@ -15,12 +15,12 @@ import org.apache.commons.math3.ml.clustering.Clusterable;
  */
 public class Audit implements Clusterable{
     private String fileName;
-    private String column;
+    private Double column;
     private double[] points;
-    public Audit(String fileName, String column) {
+    public Audit(String fileName, double column) {
         this.fileName = fileName;
         this.column = column;
-        this.points = new double[] { Double.parseDouble(column),0 };
+        this.points = new double[] { column,0 };
     }
     
     public String getFileName() {
@@ -31,11 +31,11 @@ public class Audit implements Clusterable{
         this.fileName = fileName;
     }
 
-    public String getColumn() {
+    public double getColumn() {
         return column;
     }
 
-    public void setColumn(String column) {
+    public void setColumn(double column) {
         this.column = column;
     }
 
