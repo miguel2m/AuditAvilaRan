@@ -9,7 +9,9 @@ import com.opencsv.exceptions.CsvException;
 import controller.ExecutionTime;
 import controller.Validator;
 import controller.kmeansCluster.KmeansCluster;
-import controller.readcsv.ReadCustomCsv;
+import controller.csv.ReadCustomCsv;
+import controller.csv.WriteCustomCsv;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +28,7 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import sun.net.www.http.HttpClient;
 
 /**
  *
@@ -187,16 +190,22 @@ public class AduitAvilaRan {
                     
                     stats.addValue(t.getPoints().get(0).getColumn()); 
                     if (Math.round(stats.getStandardDeviation()) <= 3){ //DESVIACION ESTANDAR RESPECTO AL BASELINE
-                        System.out.println("DESVIACION "+Math.round(stats.getStandardDeviation()) );
+                        //System.out.println("DESVIACION "+Math.round(stats.getStandardDeviation()) );
                         Audit tempBaseline = new Audit("BASELINE", _baseline);
                         t.getPoints().add(tempBaseline);
                     }
                     stats.removeMostRecentValue();
-                    System.out.println("CLUSTER "+t.getPoints().toString());
+                    //System.out.println("CLUSTER "+t.getPoints().toString());
                 }
-                
+                WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
+               
+                /*clusterAudit.forEach((t) -> {
+                    
+                    
+                });*/
                 
             }
+
         } catch (IOException ex) {
             System.out.println(""+ex.getMessage());
         } catch (CsvException ex) {

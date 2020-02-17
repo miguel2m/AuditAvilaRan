@@ -43,7 +43,7 @@ public class Audit implements Clusterable{
     public String toString() {
         return "Audit{" + "fileName=" + fileName + ", column=" + column + '}'+"\n";
     }
-
+    
     @Override
     public double[] getPoint() {
       return points;
