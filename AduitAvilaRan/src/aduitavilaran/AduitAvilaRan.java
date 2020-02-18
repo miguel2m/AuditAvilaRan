@@ -8,13 +8,17 @@ package aduitavilaran;
 import com.opencsv.exceptions.CsvException;
 import controller.ExecutionTime;
 import controller.Validator;
+import controller.chart.ChartCluster;
 import controller.kmeansCluster.KmeansCluster;
 import controller.csv.ReadCustomCsv;
 import controller.csv.WriteCustomCsv;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Audit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -183,7 +187,7 @@ public class AduitAvilaRan {
                     stats.addValue(_baseline);
                 }
                 List<CentroidCluster<Audit>> clusterAudit = KmeansCluster.getCluster(frequency.getUniqueCount(),_listAudi);
-                
+                //System.out.println(""+frequency.toString());
                 Iterator<CentroidCluster<Audit>> it = clusterAudit.iterator();
                 while(it.hasNext()){
                     CentroidCluster<Audit> t = it.next();
@@ -197,13 +201,17 @@ public class AduitAvilaRan {
                     stats.removeMostRecentValue();
                     //System.out.println("CLUSTER "+t.getPoints().toString());
                 }
-                WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
-               
-                /*clusterAudit.forEach((t) -> {
-                    
-                    
+               /* clusterAudit.forEach((a) -> {
+                    a.getPoints().forEach((b) -> {
+                        if (b.getFileName().equals("BASELINE")) {
+                            System.out.println(""+b.getColumn());
+                        }
+                    });
                 });*/
+                //WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
+               
                 
+                ChartCluster.paintChart(clusterAudit,_output,_audit);
             }
 
         } catch (IOException ex) {
