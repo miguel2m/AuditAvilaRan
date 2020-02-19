@@ -187,7 +187,7 @@ public class AduitAvilaRan {
                     stats.addValue(_baseline);
                 }
                 List<CentroidCluster<Audit>> clusterAudit = KmeansCluster.getCluster(frequency.getUniqueCount(),_listAudi);
-                //System.out.println(""+frequency.toString());
+                System.out.println(""+frequency.toString());
                 Iterator<CentroidCluster<Audit>> it = clusterAudit.iterator();
                 while(it.hasNext()){
                     CentroidCluster<Audit> t = it.next();
@@ -211,7 +211,12 @@ public class AduitAvilaRan {
                 //WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
                
                 
-                ChartCluster.paintChart(clusterAudit,_output,_audit);
+                ChartCluster.paintChart(
+                        clusterAudit,
+                        _output,
+                        _audit,
+                        String.valueOf(_baseline),
+                        frequency);
             }
 
         } catch (IOException ex) {
