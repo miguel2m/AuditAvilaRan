@@ -187,7 +187,7 @@ public class AduitAvilaRan {
                     stats.addValue(_baseline);
                 }
                 List<CentroidCluster<Audit>> clusterAudit = KmeansCluster.getCluster(frequency.getUniqueCount(),_listAudi);
-                System.out.println(""+frequency.toString());
+                //System.out.println(""+frequency.toString());
                 Iterator<CentroidCluster<Audit>> it = clusterAudit.iterator();
                 while(it.hasNext()){
                     CentroidCluster<Audit> t = it.next();
@@ -199,15 +199,8 @@ public class AduitAvilaRan {
                         t.getPoints().add(tempBaseline);
                     }
                     stats.removeMostRecentValue();
-                    //System.out.println("CLUSTER "+t.getPoints().toString());
                 }
-               /* clusterAudit.forEach((a) -> {
-                    a.getPoints().forEach((b) -> {
-                        if (b.getFileName().equals("BASELINE")) {
-                            System.out.println(""+b.getColumn());
-                        }
-                    });
-                });*/
+
                 //WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
                
                 
