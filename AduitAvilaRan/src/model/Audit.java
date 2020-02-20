@@ -13,7 +13,7 @@ import org.apache.commons.math3.ml.clustering.Clusterable;
  *
  * @author P05144
  */
-public class Audit implements Clusterable{
+public class Audit implements Clusterable,Comparable{
     private String fileName;
     private Double column;
     private double[] points;
@@ -47,6 +47,16 @@ public class Audit implements Clusterable{
     @Override
     public double[] getPoint() {
       return points;
+    }
+
+    @Override
+    public int compareTo(Object t) {
+        int columnA=(int)((Audit)t).getColumn();
+        /* For Ascending order*/
+        return (int)this.getColumn()-columnA;
+
+        /* For Descending order do like this */
+        //return compareage-this.studentage;
     }
 
     

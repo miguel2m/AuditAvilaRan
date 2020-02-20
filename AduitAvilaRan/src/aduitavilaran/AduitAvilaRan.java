@@ -15,10 +15,17 @@ import controller.csv.WriteCustomCsv;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import static java.util.Comparator.comparing;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 import model.Audit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -186,23 +193,38 @@ public class AduitAvilaRan {
                 if (_baseline != -9){
                     stats.addValue(_baseline);
                 }
+                //Collections.sort(_listAudi);
+                /*List<Audit> _listAudi2 =_listAudi.stream()
+                        .collect(
+                                collectingAndThen(
+                                        toCollection(()
+                                                -> new TreeSet<>(comparing(Audit::getFileName))),
+                                         ArrayList::new)
+                        );
+                _listAudi2.forEach(System.out::println);*/
+                
                 List<CentroidCluster<Audit>> clusterAudit = KmeansCluster.getCluster(frequency.getUniqueCount(),_listAudi);
-                //System.out.println(""+frequency.toString());
+                clusterAudit.sort((t, t1) -> {
+                    return (int)t.getPoints().get(0).getColumn()-(int)t1.getPoints().get(0).getColumn(); //To change body of generated lambdas, choose Tools | Templates.
+                });
+                System.out.println(""+frequency.toString());
                 Iterator<CentroidCluster<Audit>> it = clusterAudit.iterator();
+                
                 while(it.hasNext()){
                     CentroidCluster<Audit> t = it.next();
                     
                     stats.addValue(t.getPoints().get(0).getColumn()); 
-                    if (Math.round(stats.getStandardDeviation()) <= 3){ //DESVIACION ESTANDAR RESPECTO AL BASELINE
+                    if (Math.round(stats.getStandardDeviation()) < 3){ //DESVIACION ESTANDAR RESPECTO AL BASELINE
                         //System.out.println("DESVIACION "+Math.round(stats.getStandardDeviation()) );
                         Audit tempBaseline = new Audit("BASELINE", _baseline);
                         t.getPoints().add(tempBaseline);
                     }
                     stats.removeMostRecentValue();
+                    //System.out.println(""+t.getPoints().toString());
                 }
 
                 //WriteCustomCsv.writeDataAudit(clusterAudit,_audit, _output);
-               
+               //frequency.
                 
                 ChartCluster.paintChart(
                         clusterAudit,
