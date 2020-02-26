@@ -5,16 +5,11 @@
  */
 package controller.chart;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +21,9 @@ import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
-import org.knowm.xchart.CategorySeries;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.style.Styler.ChartTheme;
 import org.knowm.xchart.style.Styler.LegendPosition;
-import org.knowm.xchart.style.markers.SeriesMarkers;
 
 
 
@@ -56,6 +49,9 @@ public class ChartCluster {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int width = (int)screenSize.getWidth();
         int height = (int)screenSize.getHeight()-200;
+        //GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        //int width = gd.getDisplayMode().getWidth();
+        //int height = gd.getDisplayMode().getHeight()-200;
         CategoryChart   chart = new CategoryChartBuilder().width(width).height(height)
                 .title(fileOutName)
                 .xAxisTitle(fileOutName+" (BASELINE= "+_baseline+")")

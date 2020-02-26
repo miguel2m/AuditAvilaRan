@@ -11,21 +11,9 @@ import controller.Validator;
 import controller.chart.ChartCluster;
 import controller.kmeansCluster.KmeansCluster;
 import controller.csv.ReadCustomCsv;
-import controller.csv.WriteCustomCsv;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import static java.util.Comparator.comparing;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
 import model.Audit;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -39,7 +27,6 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import sun.net.www.http.HttpClient;
 
 /**
  *
